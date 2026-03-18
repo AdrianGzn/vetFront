@@ -494,7 +494,7 @@ export function InfoMascota() {
                 </h3>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">Especie:</span>
+                    <span className="text-slate-600">Grupo:</span>
                     <span className="font-medium">{pet.group || 'No especificado'}</span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -522,17 +522,6 @@ export function InfoMascota() {
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">Índice (1-9):</span>
                     <span className="font-medium">{pet.bodyCondition || 'No evaluado'}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">Estado:</span>
-                    <span className={`font-medium px-2 py-0.5 rounded-full text-xs ${
-                      pet.bodyCondition < 3 ? 'bg-yellow-100 text-yellow-800' :
-                      pet.bodyCondition <= 5 ? 'bg-green-100 text-green-800' :
-                      pet.bodyCondition <= 7 ? 'bg-orange-100 text-orange-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {getBodyConditionText(pet.bodyCondition)}
-                    </span>
                   </div>
                 </div>
               </div>
@@ -566,7 +555,7 @@ export function InfoMascota() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">Inicio síntomas:</span>
-                    <span className="font-medium">{pet.onsetTimeSymptoms || 'No especificado'}</span>
+                    <span className="font-medium">{formatDate(pet.onsetTimeSymptoms) || 'No especificado'}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">Última visita:</span>
