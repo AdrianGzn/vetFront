@@ -19,7 +19,10 @@ export function ChecklistVerificacion() {
   const [connectionMessage, setConnectionMessage] = useState('Conectando al sistema...');
   const [isVerificationActive, setIsVerificationActive] = useState(false);
   const [verificationType, setVerificationType] = useState<'static' | 'dynamic'>('static');
-  
+  const [totalTime, setTotalTime] = useState('30');
+  const [frequencyHz, setFrequencyHz] = useState('20');
+  const [amplitudeMV, setAmplitudeMV] = useState('10');
+
   const [weightSensors, setWeightSensors] = useState<SensorStatus[]>([
     { id: 'w1', name: 'Sensor de Peso 1 (Frontal Izq.)', status: 'warning', value: 'Esperando datos...', lastCheck: '--:--' },
     { id: 'w2', name: 'Sensor de Peso 2 (Frontal Der.)', status: 'warning', value: 'Esperando datos...', lastCheck: '--:--' },
@@ -70,29 +73,29 @@ export function ChecklistVerificacion() {
 
   const startVerification = useCallback(() => {
     if (!isConnected) return;
-    
+
     setIsVerificationActive(true);
     sendCommand({
       action: 'start',
       type: verificationType,
-      totalTime: '30',
-      frequencyHZ: 100,
-      amplitudeMV: 10
+      totalTime: totalTime,
+      frequencyHZ: parseInt(frequencyHz),
+      amplitudeMV: parseInt(amplitudeMV)
     });
-  }, [isConnected, verificationType, sendCommand]);
+  }, [isConnected, verificationType, totalTime, frequencyHz, amplitudeMV, sendCommand]);
 
   const stopVerification = useCallback(() => {
     if (!isConnected) return;
-    
+
     setIsVerificationActive(false);
     sendCommand({
       action: 'stop',
       type: verificationType,
-      totalTime: '30',
-      frequencyHZ: 100,
-      amplitudeMV: 10
+      totalTime: totalTime,
+      frequencyHZ: parseInt(frequencyHz),
+      amplitudeMV: parseInt(amplitudeMV)
     });
-  }, [isConnected, verificationType, sendCommand]);
+  }, [isConnected, verificationType, totalTime, frequencyHz, amplitudeMV, sendCommand]);
 
   const checkNoData = useCallback(() => {
     if (!isConnected || !isVerificationActive) return;
@@ -269,9 +272,10 @@ export function ChecklistVerificacion() {
       )}
 
       {isConnected && (
-        <div className="mb-6 space-y-4">
+        <div className="mb-6 space-y-4 bg-white rounded-lg shadow p-4">
           {/* Selector de tipo */}
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4 items-center mb-4">
+            <span className="text-sm font-medium text-slate-700">Tipo:</span>
             <label className="flex items-center gap-2">
               <input
                 type="radio"
@@ -292,6 +296,46 @@ export function ChecklistVerificacion() {
               />
               <span className="text-sm font-medium text-slate-700">Dinámico</span>
             </label>
+          </div>
+
+          {/* Parámetros ajustables */}
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Tiempo (seg)</label>
+              <input
+                type="number"
+                value={totalTime}
+                onChange={(e) => setTotalTime(e.target.value)}
+                disabled={isVerificationActive}
+                className="w-full px-3 py-2 border rounded-lg text-slate-900 disabled:bg-slate-100"
+                min="1"
+                max="300"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Frecuencia (Hz)</label>
+              <input
+                type="number"
+                value={frequencyHz}
+                onChange={(e) => setFrequencyHz(e.target.value)}
+                disabled={isVerificationActive}
+                className="w-full px-3 py-2 border rounded-lg text-slate-900 disabled:bg-slate-100"
+                min="1"
+                max="1000"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Amplitud (mV)</label>
+              <input
+                type="number"
+                value={amplitudeMV}
+                onChange={(e) => setAmplitudeMV(e.target.value)}
+                disabled={isVerificationActive}
+                className="w-full px-3 py-2 border rounded-lg text-slate-900 disabled:bg-slate-100"
+                min="0"
+                max="100"
+              />
+            </div>
           </div>
 
           {/* Botones de control */}
