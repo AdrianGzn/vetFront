@@ -184,31 +184,37 @@ export function useWebSocketFrontend(options: UseWebSocketFrontendOptions = {}) 
 
 export function useParsedESP32Data(data: ESP32Data | null) {
   const parseJSON = useCallback(<T,>(jsonData: any): T | null => {
-    if (!jsonData) return null;
+    if (jsonData === null || jsonData === undefined) return null;
     try {
       return typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
     } catch (e) {
-      console.error('Error parsing JSON:', e);
       return null;
     }
   }, []);
+
+  const parseWeight = useCallback((value: any) => {
+    if (typeof value === 'number') {
+      return { value };
+    }
+    return parseJSON<{value?: number; percentage?: number}>(value);
+  }, [parseJSON]);
 
   if (!data) return null;
 
   return {
     gyroscope: parseJSON<{x: number; y: number; z: number}>(data.gyroscope),
     accelerometer: parseJSON<{x: number; y: number; z: number}>(data.accelerometer),
-    
-    weightDistributionLF: parseJSON<{value?: number; percentage?: number}>(data.weightDistributionLF),
-    weightDistributionRF: parseJSON<{value?: number; percentage?: number}>(data.weightDistributionRF),
-    weightDistributionLB: parseJSON<{value?: number; percentage?: number}>(data.weightDistributionLB),
-    weightDistributionRB: parseJSON<{value?: number; percentage?: number}>(data.weightDistributionRB),
-    
+
+    weightDistributionLF: parseWeight(data.weightDistributionLF),
+    weightDistributionRF: parseWeight(data.weightDistributionRF),
+    weightDistributionLB: parseWeight(data.weightDistributionLB),
+    weightDistributionRB: parseWeight(data.weightDistributionRB),
+
     symmetryIndexLF: parseJSON<{value?: number; unit?: string}>(data.symmetryIndexLF),
     symmetryIndexRF: parseJSON<{value?: number; unit?: string}>(data.symmetryIndexRF),
     symmetryIndexLB: parseJSON<{value?: number; unit?: string}>(data.symmetryIndexLB),
     symmetryIndexRB: parseJSON<{value?: number; unit?: string}>(data.symmetryIndexRB),
-    
+
     verticalForce: parseJSON<{value?: number; unit?: string}>(data.verticalForce),
     verticalImpulse: data.verticalImpulse
   };
